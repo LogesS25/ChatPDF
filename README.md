@@ -3,12 +3,22 @@ A comprehensive chat application with PDF integration. This project is designed 
 
 ![alt text](image.png)
 
-Technologies and Frameworks
+## Technologies and Frameworks
 Front End - ReactJS, NextJS, TailWind CSS
+
+
 Back End - Drizzle ORM, POSTgreSQL, Neon Database serverless
+
+
 HTTP Client - AXIOS
+
+
 VECTOR DATABASE - Pinecone
+
+
 OpenAI - gpt-3.5-turbo, text-embedding-ada-002
+
+
 
 ## Getting Started
 
