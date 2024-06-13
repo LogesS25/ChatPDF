@@ -7,8 +7,12 @@ import { Inbox, Loader2 } from 'lucide-react';
 import React, { useState } from 'react'
 import { useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation'
+import { error } from 'console';
 
 const FileUpload = () => {
+    const router = useRouter()
+
     const [uploading, setUploading] = useState(false)
     //mutation is a function that allows you to hit the backend API
     //we need axios to actually make the call to backend
@@ -16,9 +20,9 @@ const FileUpload = () => {
         //this mutate will then take the endpoint and pass it back to the endpoint=create-chat
         mutationFn: async (
             { file_key, file_name }: {
-                file_key: string, file_name: string
+                file_key: string; file_name: string;
             }) => {
-            const response = await axios.post('/api/create-chat', { file_key, file_name })
+            const response = await axios.post('/api/create-chat', { file_key, file_name });
             return response.data;
         },
     });
@@ -48,12 +52,14 @@ const FileUpload = () => {
                     return;
                 }
                 mutate(data, {
-                    onSuccess: (data) => {
+                    onSuccess: ({chat_id}) => {
                         //console.log(data)
-                        toast.success(data.message)
+                        toast.success("Chat has been created");
+                        router.push(`/chat/${chat_id}`)
                     },
                     onError: (err) => {
                         toast.error('Error creating chat')
+                        console.error(err)
                     }
                 })
             } catch (error) {
