@@ -5,21 +5,46 @@ import { useChat } from "@ai-sdk/react";
 import { Button } from './button';
 import { Send } from 'lucide-react';
 import MessageList from '../MessageList';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { Message } from "ai";
 
 
-type Props = {chatId: number};
 
-const ChatComponent = ({chatId}: Props) => {
+type Props = { chatId: number };
+
+const ChatComponent = ({ chatId }: Props) => {
+    const { data, isLoading} = useQuery({
+        queryKey: ["chat", chatId],
+        queryFn: async () => {
+          const response = await axios.post<Message[]>("/api/create-chat/get-messages", {
+            chatId,
+          });
+          return response.data;
+        },
+      });
+    
+
     //this useChat() comes from vercel
     const { input, handleInputChange, handleSubmit, messages } = useChat({
         //whenever we hit the message it will send our message to chatgpt endpoint
         //and it will return us with a output fro chatgpt
-        api : "/api/create-chat/chat",
+        api: "/api/create-chat/chat",
         body: {
             chatId,
-          },
-        
-    })
+        },
+        initialMessages: data || []
+    });
+    React.useEffect(() => {
+        const messageContainer = document.getElementById("message-container");
+        if (messageContainer) {
+            messageContainer.scrollTo({
+                top: messageContainer.scrollHeight,
+                behavior: "smooth",
+            });
+        }
+    }, [messages]);
+
     return (
         <div className="relative max-h-screen overflow-scroll"
             id="message-container"
@@ -29,7 +54,7 @@ const ChatComponent = ({chatId}: Props) => {
                 <h3 className="text-xl font-bold">Chat</h3>
             </div>
             {/* message list */}
-            <MessageList messages={messages}/>
+            <MessageList messages={messages} isLoading={isLoading}/>
             <form
                 onSubmit={handleSubmit}
                 className="sticky bottom-0 inset-x-0 px-2 py-4 bg-white"
